@@ -9,7 +9,7 @@ body {
 }
 
 .blockMain {
-  background-image: url("./pictures/website-background.jpg");
+  background-image: url("../public/pictures/website-background.jpg");
   height: 100vh;
   background-size: cover;
   display: flex;

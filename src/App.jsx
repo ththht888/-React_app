@@ -1,17 +1,45 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
+import { API_BASE } from "./constans";
+import { deleteCard, getDataCards } from "./api";
 
-const API_BASE = "http://localhost:8080";
+// Два задания
+// 1 - вынести апишки в indexed.js
+// 2 - исправить state инпутов карточки на один объект
+
+// Было
+const [name, setName] = useState("");
+const [phone, setPhone] = useState("");
+const [position, setPosition] = useState("");
+
+// Стало
+const [formCreateCard, setFormCreateCard] = useState({
+  name: "",
+  phone: "",
+  jobPosition: "",
+});
+
+// аналогично с editState
+const [editName, setEditName] = useState("");
+const [editPhone, setEditPhone] = useState("");
+const [editPosition, setEditPosition] = useState("");
+
+// на 
+const [formEditCard, setFormEditCard] = useState({
+  name: "",
+  phone: "",
+  jobPosition: "",
+});
 
 function App() {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [position, setPosition] = useState("");
+  // const [name, setName] = useState("");
+  // const [phone, setPhone] = useState("");
+  // const [position, setPosition] = useState("");
   const [cards, setCards] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [editName, setEditName] = useState("");
-  const [editPhone, setEditPhone] = useState("");
-  const [editPosition, setEditPosition] = useState("");
+  // const [editName, setEditName] = useState("");
+  // const [editPhone, setEditPhone] = useState("");
+  // const [editPosition, setEditPosition] = useState("");
 
   useEffect(() => {
     fetch(`${API_BASE}/task/all`)
@@ -46,10 +74,6 @@ function App() {
     setEditPosition(card.jobPosition);
   };
 
-  const cancelEdit = () => {
-    setEditingId(null);
-  };
-
   const saveEdit = (id) => {
     fetch(`${API_BASE}/task/${id}`, {
       method: "PUT",
@@ -70,12 +94,10 @@ function App() {
       .catch(console.error);
   };
 
-  const deleteCard = (id) => {
-    fetch(`${API_BASE}/task/${id}`, { method: "DELETE" })
-      .then(() => fetch(`${API_BASE}/task/all`))
-      .then((r) => r.json())
-      .then(setCards)
-      .catch(console.error);
+  const deleteCurrentCard = (id) => {
+    deleteCard(id)
+      .then((res) => getDataCards().then((res) => setCards(res)))
+      .catch((e) => console.error(e));
   };
 
   return (
@@ -165,7 +187,10 @@ function App() {
                       alt="ok"
                     />
                   </button>
-                  <button className="cancel-button" onClick={cancelEdit}>
+                  <button
+                    className="cancel-button"
+                    onClick={() => setEditingId(null)}
+                  >
                     <img
                       src={`${process.env.PUBLIC_URL}/icons/cancel.svg`}
                       className="cancel-icon"
@@ -190,7 +215,7 @@ function App() {
                   </button>
                   <button
                     className="delete-button"
-                    onClick={() => deleteCard(c.id)}
+                    onClick={() => deleteCurrentCard(c.id)}
                   >
                     <img
                       src={`${process.env.PUBLIC_URL}/icons/trash.svg`}
