@@ -1,103 +1,88 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { API_BASE } from "./constans";
-import { deleteCard, getDataCards } from "./api";
-
-// Два задания
-// 1 - вынести апишки в indexed.js
-// 2 - исправить state инпутов карточки на один объект
-
-// Было
-const [name, setName] = useState("");
-const [phone, setPhone] = useState("");
-const [position, setPosition] = useState("");
-
-// Стало
-const [formCreateCard, setFormCreateCard] = useState({
-  name: "",
-  phone: "",
-  jobPosition: "",
-});
-
-// аналогично с editState
-const [editName, setEditName] = useState("");
-const [editPhone, setEditPhone] = useState("");
-const [editPosition, setEditPosition] = useState("");
-
-// на 
-const [formEditCard, setFormEditCard] = useState({
-  name: "",
-  phone: "",
-  jobPosition: "",
-});
+import {
+  getDataCards,
+  createCard,
+  updateCard,
+  deleteCard,
+} from "./api/index.js";
 
 function App() {
-  // const [name, setName] = useState("");
-  // const [phone, setPhone] = useState("");
-  // const [position, setPosition] = useState("");
   const [cards, setCards] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  // const [editName, setEditName] = useState("");
-  // const [editPhone, setEditPhone] = useState("");
-  // const [editPosition, setEditPosition] = useState("");
+  const [formCreateCard, setFormCreateCard] = useState({
+    name: "",
+    phone: "",
+    jobPosition: "",
+  });
+  const [formEditCard, setFormEditCard] = useState({
+    name: "",
+    phone: "",
+    jobPosition: "",
+  });
 
   useEffect(() => {
-    fetch(`${API_BASE}/task/all`)
-      .then((r) => r.json())
-      .then(setCards)
-      .catch(console.error);
+    getDataCards().then(setCards).catch(console.error);
   }, []);
 
-  const isValid = name.trim() && phone.length === 11 && position;
+  const { name, phone, jobPosition } = formCreateCard;
+  const isValid = name.trim() && phone.length === 11 && jobPosition;
 
-  const addCard = () => {
-    fetch(`${API_BASE}/task`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, phone, jobPosition: position }),
-    })
-      .then(() => fetch(`${API_BASE}/task/all`))
-      .then((r) => r.json())
-      .then((data) => {
-        setCards(data);
-        setName("");
-        setPhone("");
-        setPosition("");
-      })
-      .catch(console.error);
+  const handleCreateChange = (field) => (e) => {
+    const value =
+      field === "phone"
+        ? e.target.value.replace(/\D/g, "").slice(0, 11)
+        : e.target.value;
+    setFormCreateCard((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const addNewCard = async () => {
+    try {
+      await createCard(formCreateCard);
+      const data = await getDataCards();
+      setCards(data);
+      setFormCreateCard({ name: "", phone: "", jobPosition: "" });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const startEdit = (card) => {
     setEditingId(card.id);
-    setEditName(card.name);
-    setEditPhone(card.phone);
-    setEditPosition(card.jobPosition);
+    setFormEditCard({
+      name: card.name,
+      phone: card.phone,
+      jobPosition: card.jobPosition,
+    });
   };
 
-  const saveEdit = (id) => {
-    fetch(`${API_BASE}/task/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id,
-        name: editName,
-        phone: editPhone,
-        jobPosition: editPosition,
-      }),
-    })
-      .then(() => fetch(`${API_BASE}/task/all`))
-      .then((r) => r.json())
-      .then((data) => {
-        setCards(data);
-        setEditingId(null);
-      })
-      .catch(console.error);
+  const handleEditChange = (field) => (e) => {
+    const value =
+      field === "phone"
+        ? e.target.value.replace(/\D/g, "").slice(0, 11)
+        : e.target.value;
+    setFormEditCard((prev) => ({ ...prev, [field]: value }));
   };
 
-  const deleteCurrentCard = (id) => {
-    deleteCard(id)
-      .then((res) => getDataCards().then((res) => setCards(res)))
-      .catch((e) => console.error(e));
+  const saveEditCard = async (id) => {
+    try {
+      await updateCard(id, formEditCard);
+      const data = await getDataCards();
+      setCards(data);
+      setEditingId(null);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const deleteCurrentCard = async (id) => {
+    try {
+      await deleteCard(id);
+      const data = await getDataCards();
+      setCards(data);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -110,7 +95,7 @@ function App() {
               className="inputString"
               placeholder="Имя"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={handleCreateChange("name")}
             />
             <input
               className="inputString"
@@ -121,14 +106,12 @@ function App() {
                   e.key
                 ) && e.preventDefault()
               }
-              onChange={(e) =>
-                setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))
-              }
+              onChange={handleCreateChange("phone")}
             />
             <select
               className="blockSelect"
-              value={position}
-              onChange={(e) => setPosition(e.target.value)}
+              value={jobPosition}
+              onChange={handleCreateChange("jobPosition")}
             >
               <option value="">Должность</option>
               <option value="admin">Admin</option>
@@ -136,7 +119,11 @@ function App() {
               <option value="qa">Qa</option>
               <option value="devops">DevOps</option>
             </select>
-            <button className="blockBtn" disabled={!isValid} onClick={addCard}>
+            <button
+              className="blockBtn"
+              disabled={!isValid}
+              onClick={addNewCard}
+            >
               Добавить
             </button>
           </div>
@@ -146,12 +133,12 @@ function App() {
                 <div key={c.id} className={`card ${c.jobPosition}`}>
                   <input
                     className="inputString"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
+                    value={formEditCard.name}
+                    onChange={handleEditChange("name")}
                   />
                   <input
                     className="inputString"
-                    value={editPhone}
+                    value={formEditCard.phone}
                     onKeyDown={(e) =>
                       [
                         "e",
@@ -164,23 +151,22 @@ function App() {
                         "ArrowDown",
                       ].includes(e.key) && e.preventDefault()
                     }
-                    onChange={(e) =>
-                      setEditPhone(
-                        e.target.value.replace(/\D/g, "").slice(0, 11)
-                      )
-                    }
+                    onChange={handleEditChange("phone")}
                   />
                   <select
                     className="blockSelect"
-                    value={editPosition}
-                    onChange={(e) => setEditPosition(e.target.value)}
+                    value={formEditCard.jobPosition}
+                    onChange={handleEditChange("jobPosition")}
                   >
                     <option value="admin">Admin</option>
                     <option value="developer">Developer</option>
                     <option value="qa">Qa</option>
                     <option value="devops">DevOps</option>
                   </select>
-                  <button className="ok-button" onClick={() => saveEdit(c.id)}>
+                  <button
+                    className="ok-button"
+                    onClick={() => saveEditCard(c.id)}
+                  >
                     <img
                       src={`${process.env.PUBLIC_URL}/icons/ok.svg`}
                       className="ok-icon"
