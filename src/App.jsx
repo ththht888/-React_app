@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { getDataCards, createCard, updateCard, deleteCard } from "./api";
+import Card from "./components/card/Card";
+import Input from "./components/ui/Input";
+import Button from "./components/ui/Button";
+import Select from "./components/ui/Select";
 import "./App.css";
-import {
-  getDataCards,
-  createCard,
-  updateCard,
-  deleteCard,
-} from "./api/index.js";
 
 function App() {
   const [cards, setCards] = useState([]);
@@ -22,26 +21,41 @@ function App() {
   });
 
   useEffect(() => {
-    getDataCards().then(setCards).catch(console.error);
+    console.log("Effect");
+    getDataCards()
+      .then((res) => {
+        if (res) {
+          console.log(res, "RESPONSE");
+          setCards(res);
+        }
+      })
+      .catch(console.error);
   }, []);
 
-  const { name, phone, jobPosition } = formCreateCard;
-  const isValid = name.trim() && phone.length === 11 && jobPosition;
+  const isValid =
+    formCreateCard.name.trim() &&
+    formCreateCard.phone.length === 11 &&
+    formCreateCard.jobPosition;
 
-  const handleCreateChange = (field) => (e) => {
+  const handleChange = (formSetter) => (field) => (e) => {
     const value =
       field === "phone"
         ? e.target.value.replace(/\D/g, "").slice(0, 11)
         : e.target.value;
-    setFormCreateCard((prev) => ({ ...prev, [field]: value }));
+    formSetter((prev) => ({ ...prev, [field]: value }));
   };
+
+  const handleCreateChange = handleChange(setFormCreateCard);
+  const handleEditChange = handleChange(setFormEditCard);
 
   const addNewCard = async () => {
     try {
-      await createCard(formCreateCard);
-      const data = await getDataCards();
-      setCards(data);
-      setFormCreateCard({ name: "", phone: "", jobPosition: "" });
+      const response = await createCard(formCreateCard);
+      if (response) {
+        const data = await getDataCards();
+        if (data) setCards(data);
+        setFormCreateCard({ name: "", phone: "", jobPosition: "" });
+      }
     } catch (e) {
       console.error(e);
     }
@@ -56,20 +70,14 @@ function App() {
     });
   };
 
-  const handleEditChange = (field) => (e) => {
-    const value =
-      field === "phone"
-        ? e.target.value.replace(/\D/g, "").slice(0, 11)
-        : e.target.value;
-    setFormEditCard((prev) => ({ ...prev, [field]: value }));
-  };
-
   const saveEditCard = async (id) => {
     try {
-      await updateCard(id, formEditCard);
-      const data = await getDataCards();
-      setCards(data);
-      setEditingId(null);
+      const response = await updateCard(id, formEditCard);
+      if (response) {
+        const data = await getDataCards();
+        if (data) setCards(data);
+        setEditingId(null);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -77,9 +85,11 @@ function App() {
 
   const deleteCurrentCard = async (id) => {
     try {
-      await deleteCard(id);
-      const data = await getDataCards();
-      setCards(data);
+      const response = await deleteCard(id);
+      if (response) {
+        const data = await getDataCards();
+        if (data) setCards(data);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -91,127 +101,37 @@ function App() {
       <div className="blockTransparent">
         <div className="blockCartandCard">
           <div className="cart">
-            <input
-              className="inputString"
+            <Input
               placeholder="Имя"
-              value={name}
+              value={formCreateCard.name}
               onChange={handleCreateChange("name")}
             />
-            <input
-              className="inputString"
+            <Input
               placeholder="Телефон"
-              value={phone}
-              onKeyDown={(e) =>
-                ["e", "-", "+", ".", " ", ",", "ArrowUp", "ArrowDown"].includes(
-                  e.key
-                ) && e.preventDefault()
-              }
+              value={formCreateCard.phone}
               onChange={handleCreateChange("phone")}
+              isPhone
             />
-            <select
-              className="blockSelect"
-              value={jobPosition}
+            <Select
+              value={formCreateCard.jobPosition}
               onChange={handleCreateChange("jobPosition")}
-            >
-              <option value="">Должность</option>
-              <option value="admin">Admin</option>
-              <option value="developer">Developer</option>
-              <option value="qa">Qa</option>
-              <option value="devops">DevOps</option>
-            </select>
-            <button
-              className="blockBtn"
-              disabled={!isValid}
-              onClick={addNewCard}
-            >
-              Добавить
-            </button>
+            />
+            <Button text="Добавить" onClick={addNewCard} disabled={!isValid} />
           </div>
           <div className="cards">
-            {cards.map((c) =>
-              editingId === c.id ? (
-                <div key={c.id} className={`card ${c.jobPosition}`}>
-                  <input
-                    className="inputString"
-                    value={formEditCard.name}
-                    onChange={handleEditChange("name")}
-                  />
-                  <input
-                    className="inputString"
-                    value={formEditCard.phone}
-                    onKeyDown={(e) =>
-                      [
-                        "e",
-                        "-",
-                        "+",
-                        ".",
-                        " ",
-                        ",",
-                        "ArrowUp",
-                        "ArrowDown",
-                      ].includes(e.key) && e.preventDefault()
-                    }
-                    onChange={handleEditChange("phone")}
-                  />
-                  <select
-                    className="blockSelect"
-                    value={formEditCard.jobPosition}
-                    onChange={handleEditChange("jobPosition")}
-                  >
-                    <option value="admin">Admin</option>
-                    <option value="developer">Developer</option>
-                    <option value="qa">Qa</option>
-                    <option value="devops">DevOps</option>
-                  </select>
-                  <button
-                    className="ok-button"
-                    onClick={() => saveEditCard(c.id)}
-                  >
-                    <img
-                      src={`${process.env.PUBLIC_URL}/icons/ok.svg`}
-                      className="ok-icon"
-                      alt="ok"
-                    />
-                  </button>
-                  <button
-                    className="cancel-button"
-                    onClick={() => setEditingId(null)}
-                  >
-                    <img
-                      src={`${process.env.PUBLIC_URL}/icons/cancel.svg`}
-                      className="cancel-icon"
-                      alt="cancel"
-                    />
-                  </button>
-                </div>
-              ) : (
-                <div key={c.id} className={`card ${c.jobPosition}`}>
-                  <p>Имя: {c.name}</p>
-                  <p>Телефон: {c.phone}</p>
-                  <p>Должность: {c.jobPosition}</p>
-                  <button
-                    className="change-button"
-                    onClick={() => startEdit(c)}
-                  >
-                    <img
-                      src={`${process.env.PUBLIC_URL}/icons/changeBtn.svg`}
-                      className="change-icon"
-                      alt="change"
-                    />
-                  </button>
-                  <button
-                    className="delete-button"
-                    onClick={() => deleteCurrentCard(c.id)}
-                  >
-                    <img
-                      src={`${process.env.PUBLIC_URL}/icons/trash.svg`}
-                      className="delete-icon"
-                      alt="delete"
-                    />
-                  </button>
-                </div>
-              )
-            )}
+            {cards.map((c) => (
+              <Card
+                key={c.id}
+                card={c}
+                editing={editingId === c.id}
+                formData={formEditCard}
+                onEditChange={handleEditChange}
+                onSave={() => saveEditCard(c.id)}
+                onCancel={() => setEditingId(null)}
+                onStartEdit={() => startEdit(c)}
+                onDelete={() => deleteCurrentCard(c.id)}
+              />
+            ))}
           </div>
         </div>
       </div>
