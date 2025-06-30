@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { getDataCards, createCard, updateCard, deleteCard } from "./api";
 import Card from "./components/card/Card";
-import Input from "./components/ui/Input";
-import Button from "./components/ui/Button";
-import Select from "./components/ui/Select";
-import "./App.css";
+import CreateCardForm from "./components/form/CreateCardForm";
+import './components/form/Form.css';
+import './components/card/Card.css';
+import './styles/Layout.css';
+
 
 function App() {
   const [cards, setCards] = useState([]);
@@ -21,16 +22,17 @@ function App() {
   });
 
   useEffect(() => {
-    console.log("Effect");
-    getDataCards()
-      .then((res) => {
-        if (res) {
-          console.log(res, "RESPONSE");
-          setCards(res);
-        }
-      })
-      .catch(console.error);
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const res = await getDataCards();
+      if (res) setCards(res);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const isValid =
     formCreateCard.name.trim() &&
@@ -52,8 +54,7 @@ function App() {
     try {
       const response = await createCard(formCreateCard);
       if (response) {
-        const data = await getDataCards();
-        if (data) setCards(data);
+        await fetchData();
         setFormCreateCard({ name: "", phone: "", jobPosition: "" });
       }
     } catch (e) {
@@ -74,8 +75,7 @@ function App() {
     try {
       const response = await updateCard(id, formEditCard);
       if (response) {
-        const data = await getDataCards();
-        if (data) setCards(data);
+        await fetchData();
         setEditingId(null);
       }
     } catch (e) {
@@ -86,10 +86,7 @@ function App() {
   const deleteCurrentCard = async (id) => {
     try {
       const response = await deleteCard(id);
-      if (response) {
-        const data = await getDataCards();
-        if (data) setCards(data);
-      }
+      if (response) await fetchData();
     } catch (e) {
       console.error(e);
     }
@@ -100,24 +97,12 @@ function App() {
       <h3 className="mainText">Список сотрудников</h3>
       <div className="blockTransparent">
         <div className="blockCartandCard">
-          <div className="cart">
-            <Input
-              placeholder="Имя"
-              value={formCreateCard.name}
-              onChange={handleCreateChange("name")}
-            />
-            <Input
-              placeholder="Телефон"
-              value={formCreateCard.phone}
-              onChange={handleCreateChange("phone")}
-              isPhone
-            />
-            <Select
-              value={formCreateCard.jobPosition}
-              onChange={handleCreateChange("jobPosition")}
-            />
-            <Button text="Добавить" onClick={addNewCard} disabled={!isValid} />
-          </div>
+          <CreateCardForm
+            formCreateCard={formCreateCard}
+            handleCreateChange={handleCreateChange}
+            onAdd={addNewCard}
+            isValid={isValid}
+          />
           <div className="cards">
             {cards.map((c) => (
               <Card

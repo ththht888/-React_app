@@ -1,0 +1,9 @@
+.blockBtn {
+  width: 200px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}

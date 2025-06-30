@@ -1,0 +1,10 @@
+.cart {
+  width: 330px;
+  background-color: #91ad91;
+  border-radius: 10px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}

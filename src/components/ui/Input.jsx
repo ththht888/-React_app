@@ -2,9 +2,7 @@ import React from "react";
 
 const Input = ({ value, onChange, placeholder, isPhone = false }) => {
   const handleKeyDown = (e) => {
-    if (
-      ["e", "-", "+", ".", " ", ",", "ArrowUp", "ArrowDown"].includes(e.key)
-    ) {
+    if (["e", "-", "+", ".", " ", ",", "ArrowUp", "ArrowDown"].includes(e.key)) {
       e.preventDefault();
     }
   };
