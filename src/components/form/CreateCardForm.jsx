@@ -1,7 +1,8 @@
 import React from "react";
-import Input from "../ui/Input";
-import Select from "../ui/Select";
-import Button from "../ui/Button";
+import Input from "../ui/input/Input";
+import Select from "../ui/select/Select";
+// import Button from '../ui/button/Button';
+import { Button } from "antd";
 
 const CreateCardForm = ({
   formCreateCard,
@@ -25,7 +26,14 @@ const CreateCardForm = ({
       value={formCreateCard.jobPosition}
       onChange={handleCreateChange("jobPosition")}
     />
-    <Button text="Добавить" onClick={onAdd} disabled={!isValid} />
+    <Button
+      type="default"
+      onClick={onAdd}
+      disabled={!isValid}
+      className="add-button"
+    >
+      Добавить
+    </Button>
   </div>
 );
 

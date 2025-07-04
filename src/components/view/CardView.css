@@ -1,0 +1,27 @@
+.edit-icon-button.ant-btn,
+.delete-icon-button.ant-btn {
+  position: absolute;
+  background-color: transparent;
+  border: none;
+  color: black;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-icon-button.ant-btn {
+  top: 5px;
+  right: 5px;
+}
+
+.delete-icon-button.ant-btn {
+  bottom: 5px;
+  right: 5px;
+}
+
+.edit-icon-button.ant-btn:hover,
+.delete-icon-button.ant-btn:hover {
+  background-color: rgba(128, 128, 128, 0.2) !important;
+  color: black !important;
+}

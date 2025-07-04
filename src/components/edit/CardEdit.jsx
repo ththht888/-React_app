@@ -1,7 +1,8 @@
 import React from "react";
-import Input from "../ui/Input";
-import Select from "../ui/Select";
-import Button from "../ui/Button";
+import Input from '../ui/input/Input';
+import Select from '../ui/select/Select';
+import Button from '../ui/button/Button';
+
 
 const CardEdit = ({ card, formData, onEditChange, onSave, onCancel }) => (
   <div className={`card ${card.jobPosition}`}>

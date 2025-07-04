@@ -1,6 +1,6 @@
 import React from "react";
-import CardEdit from "./CardEdit";
-import CardView from "./CardView";
+import CardEdit from '../edit/CardEdit';
+import CardView from '../view/CardView';
 
 const Card = (props) => {
   return props.editing ? <CardEdit {...props} /> : <CardView {...props} />;

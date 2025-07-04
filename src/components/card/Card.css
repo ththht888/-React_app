@@ -24,8 +24,7 @@
   background-color: #d2ec3f;
 }
 
-.delete-button,
-.change-button,
+
 .ok-button,
 .cancel-button {
   background: none;
@@ -35,15 +34,6 @@
   position: absolute;
 }
 
-.delete-button {
-  bottom: 5px;
-  right: 5px;
-}
-
-.change-button {
-  top: 5px;
-  right: 5px;
-}
 
 .ok-button {
   bottom: 5px;
@@ -55,8 +45,7 @@
   right: 5px;
 }
 
-.delete-icon,
-.change-icon,
+
 .ok-icon,
 .cancel-icon {
   width: 30px;

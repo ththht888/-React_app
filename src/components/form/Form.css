@@ -1,4 +1,5 @@
 .cart {
+  position: relative;
   width: 330px;
   background-color: #91ad91;
   border-radius: 10px;
@@ -7,4 +8,16 @@
   flex-direction: column;
   justify-content: center;
   gap: 5px;
+}
+
+.cart .add-button {
+  background-color: #5cce23;
+  border-color: #2a5714;
+  color: white;
+}
+
+.cart .add-button:hover {
+  background-color: #6b8e23;
+  border-color: #006400;
+  color: white;
 }
