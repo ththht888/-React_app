@@ -45,15 +45,6 @@
   right: 5px;
 }
 
-
-.ok-icon,
-.cancel-icon {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-  display: block;
-}
-
 .card .inputString,
 .card .blockSelect {
   width: 100%;

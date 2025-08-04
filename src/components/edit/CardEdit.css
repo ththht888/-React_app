@@ -1,0 +1,27 @@
+.ok-button.ant-btn,
+.cancel-button.ant-btn {
+  position: absolute;
+  background-color: transparent;
+  border: none;
+  color: black;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ok-button.ant-btn {
+  bottom: 5px;
+  left: 5px;
+}
+
+.cancel-button.ant-btn {
+  bottom: 5px;
+  right: 5px;
+}
+
+.ok-button.ant-btn:hover,
+.cancel-button.ant-btn:hover {
+  background-color: rgba(128, 128, 128, 0.2) !important;
+  color: black !important;
+}

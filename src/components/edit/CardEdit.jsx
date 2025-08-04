@@ -1,40 +1,50 @@
 import React from "react";
-import Input from '../ui/input/Input';
-import Select from '../ui/select/Select';
-import Button from '../ui/button/Button';
+import { Button } from "antd";
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
+import Input from "../ui/input/Input";
+import Select from "../ui/select/Select";
 
+const CardEdit = ({ card, formData, onEditChange, onSave, onCancel }) => {
+  const { t } = useTranslation();
 
-const CardEdit = ({ card, formData, onEditChange, onSave, onCancel }) => (
-  <div className={`card ${card.jobPosition}`}>
-    <Input value={formData.name} onChange={onEditChange("name")} />
-    <Input value={formData.phone} onChange={onEditChange("phone")} isPhone />
-    <Select
-      value={formData.jobPosition}
-      onChange={onEditChange("jobPosition")}
-    />
-    <Button
-      onClick={onSave}
-      className="ok-button"
-      text={
-        <img
-          src={`${process.env.PUBLIC_URL}/icons/ok.svg`}
-          className="ok-icon"
-          alt="ok"
-        />
-      }
-    />
-    <Button
-      onClick={onCancel}
-      className="cancel-button"
-      text={
-        <img
-          src={`${process.env.PUBLIC_URL}/icons/cancel.svg`}
-          className="cancel-icon"
-          alt="cancel"
-        />
-      }
-    />
-  </div>
-);
+  return (
+    <div className={`card ${card.jobPosition}`}>
+      <Input
+        placeholder={t("name")}
+        value={formData.name}
+        onChange={onEditChange("name")}
+      />
+      <Input
+        placeholder={t("phone")}
+        value={formData.phone}
+        onChange={onEditChange("phone")}
+        isPhone
+      />
+      <Select
+        value={formData.jobPosition}
+        onChange={onEditChange("jobPosition")}
+        options={[
+          { value: "admin", label: t("admin") },
+          { value: "developer", label: t("developer") },
+          { value: "qa", label: t("qa") },
+          { value: "devops", label: t("devops") },
+        ]}
+      />
+      <Button
+        onClick={onSave}
+        className="ok-button"
+        icon={<CheckOutlined />}
+        title={t("save")}
+      />
+      <Button
+        onClick={onCancel}
+        className="cancel-button"
+        icon={<CloseOutlined />}
+        title={t("cancel")}
+      />
+    </div>
+  );
+};
 
 export default CardEdit;

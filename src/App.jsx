@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { getDataCards, createCard, updateCard, deleteCard } from "./api";
 import Card from "./components/card/Card";
-import CreateCardForm from "./components/form/CreateCardForm";
-import './components/form/Form.css';
-import './components/card/Card.css';
-import './styles/Layout.css';
-
+import CreateCardForm from "./components/form/Form";
+import "./components/form/Form.css";
+import "./components/card/Card.css";
+import "./styles/Layout.css";
 
 function App() {
+  const { t, i18n } = useTranslation();
+
   const [cards, setCards] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [formCreateCard, setFormCreateCard] = useState({
@@ -94,7 +96,12 @@ function App() {
 
   return (
     <div className="blockMain">
-      <h3 className="mainText">Список сотрудников</h3>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+        <button onClick={() => i18n.changeLanguage("ru")}>RU</button>
+        <button onClick={() => i18n.changeLanguage("en")}>EN</button>
+      </div>
+
+      <h3 className="mainText">{t("title")}</h3>
       <div className="blockTransparent">
         <div className="blockCartandCard">
           <CreateCardForm

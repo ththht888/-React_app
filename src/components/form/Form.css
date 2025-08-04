@@ -10,14 +10,14 @@
   gap: 5px;
 }
 
-.cart .add-button {
+.cart .add-button.ant-btn {
   background-color: #5cce23;
   border-color: #2a5714;
   color: white;
 }
 
-.cart .add-button:hover {
-  background-color: #6b8e23;
-  border-color: #006400;
+.cart .add-button.ant-btn:hover {
+  background-color: #006400;
+  border-color: #004d00;
   color: white;
 }
